@@ -11,19 +11,24 @@ import SpriteKit
 import GameplayKit
 import WatchConnectivity
 
-class GameScene: SKScene,WCSessionDelegate {
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+class GameScene: SKScene,WCSessionDelegate
+{
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?)
+    {
         
     }
     
-    func sessionDidBecomeInactive(_ session: WCSession) {
+    func sessionDidBecomeInactive(_ session: WCSession)
+    {
         
     }
     
-    func sessionDidDeactivate(_ session: WCSession) {
+    func sessionDidDeactivate(_ session: WCSession)
+    {
         
     }
     
+    var Catposition = "left" // watch move for game
     
     let cat = SKSpriteNode(imageNamed: "character1")
     let sushiBase = SKSpriteNode(imageNamed:"roll")
@@ -38,17 +43,84 @@ class GameScene: SKScene,WCSessionDelegate {
     var catPosition = "left"
     var chopstickPositions:[String] = []
     
-    func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any])
+    {
         // Output message to terminal
         print("WATCH: I received a message: \(message)")
         
         let name = message["name"] as! String
         print("\(name)")
+         catMove(name: name)
 
+    }
+    
+
+    func catMove(name:String) {
+        if (name == "left") {
+            print("Left Tap")
+            // 2. person clicked left, so move cat left
+            cat.position = CGPoint(x:self.size.width*0.25, y:100)
+            
+            // change the cat's direction
+            let facingRight = SKAction.scaleX(to: 1, duration: 0)
+            self.cat.run(facingRight)
+            
+            // save cat's position
+            self.catPosition = "left"
+            animation(catPosition: catPosition)
+            
+        }
+        else{
+            print("Right Tap")
+            // 2. person clicked right, so move cat right
+            cat.position = CGPoint(x:self.size.width*0.85, y:100)
+            
+            // change the cat's direction
+            let facingLeft = SKAction.scaleX(to: -1, duration: 0)
+            self.cat.run(facingLeft)
+            
+            // save cat's position
+            self.catPosition = "right"
+            animation(catPosition: catPosition)
+            
+        }
         
     }
     
-    func spawnSushi() {
+    
+    func animation(catPosition:String)
+    {
+        let pieceToRemove = self.sushiTower.first
+        let stickToRemove = self.chopstickGraphicsArray.first
+        
+        if (pieceToRemove != nil && stickToRemove != nil) {
+            // SUSHI: hide it from the screen & remove from game logic
+            pieceToRemove!.removeFromParent()
+            self.sushiTower.remove(at: 0)
+            
+            // STICK: hide it from screen & remove from game logic
+            stickToRemove!.removeFromParent()
+            self.chopstickGraphicsArray.remove(at:0)
+            
+            // STICK: Update stick positions array:
+            self.chopstickPositions.remove(at:0)
+            
+            // SUSHI: loop through the remaining pieces and redraw the Tower
+            for piece in sushiTower {
+                piece.position.y = piece.position.y - SUSHI_PIECE_GAP
+            }
+            
+            // STICK: loop through the remaining sticks and redraw
+            for stick in chopstickGraphicsArray {
+                stick.position.y = stick.position.y - SUSHI_PIECE_GAP
+            }
+        }
+        
+    }
+
+
+    func spawnSushi()
+    {
         
         // -----------------------
         // MARK: PART 1: ADD SUSHI TO GAME
@@ -64,7 +136,8 @@ class GameScene: SKScene,WCSessionDelegate {
                 + SUSHI_PIECE_GAP
             sushi.position.x = self.size.width*0.5
         }
-        else {
+        else
+        {
             // OPTION 1 syntax: let previousSushi = sushiTower.last
             // OPTION 2 syntax:
             let previousSushi = sushiTower[self.sushiTower.count - 1]
@@ -97,7 +170,8 @@ class GameScene: SKScene,WCSessionDelegate {
         // generate a number between 1 and 2
         let stickPosition = Int.random(in: 1...2)
         print("Random number: \(stickPosition)")
-        if (stickPosition == 1) {
+        if (stickPosition == 1)
+        {
             // save the current position of the chopstick
             self.chopstickPositions.append("right")
             
@@ -115,7 +189,9 @@ class GameScene: SKScene,WCSessionDelegate {
             let facingRight = SKAction.scaleX(to: -1, duration: 0)
             stick.run(facingRight)
         }
-        else if (stickPosition == 2) {
+            
+        else if (stickPosition == 2)
+        {
             // save the current position of the chopstick
             self.chopstickPositions.append("left")
             
@@ -134,23 +210,19 @@ class GameScene: SKScene,WCSessionDelegate {
         // Add this if you cannot see the chopsticks
         // sushi.zPosition = -1
         
-       
-        
-        
     }
-    
-    
   
-    override func didMove(to view: SKView) {
-        if(WCSession.isSupported() == true) {
-            
+    override func didMove(to view: SKView)
+    {
+        if(WCSession.isSupported() == true)
+        {
             let session = WCSession.default
             session.delegate = self
             session.activate()
         }
-        else{
-            
-
+        else
+        {
+      
         }
         // add background
         let background = SKSpriteNode(imageNamed: "background")
@@ -171,11 +243,14 @@ class GameScene: SKScene,WCSessionDelegate {
         self.buildTower()
     }
     
-    func buildTower() {
-        for _ in 0...5 {
+    func buildTower()
+    {
+        for _ in 0...5
+        {
             self.spawnSushi()
         }
-        for i in 0...5 {
+        for i in 0...5
+        {
             print(self.chopstickPositions[i])
         }
         
@@ -183,6 +258,7 @@ class GameScene: SKScene,WCSessionDelegate {
     
     
     override func update(_ currentTime: TimeInterval) {
+        
     }
     
     

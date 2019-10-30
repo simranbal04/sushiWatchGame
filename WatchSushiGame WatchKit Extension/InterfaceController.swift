@@ -67,7 +67,7 @@ class InterfaceController: WKInterfaceController,WCSessionDelegate {
     }
     
     @IBAction func rightButtonPressed() {
-        print("Sys")
+        print("Right Button")
         // ------ SEND MESSAGE TO WATCH CODE GOES HERE
         
         if(WCSession.default.isReachable == true){
@@ -84,3 +84,5 @@ class InterfaceController: WKInterfaceController,WCSessionDelegate {
     }
 
 }
+
+
